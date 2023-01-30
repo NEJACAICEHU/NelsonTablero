@@ -1,0 +1,146 @@
+---
+title: "INFORME DE RESULTADOS CARRERA DE LA LUZ 2022"
+output: 
+  flexdashboard::flex_dashboard:
+    theme:
+      bg: "#FFFFFF"
+      fg: "#030303" 
+      primary: "#228B22"
+      base_font:
+        google: Prompt
+      code_font:
+        google: JetBrains Mono
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+
+```
+Column {data-width=650 .tabset}
+----------------------------------------------------------------
+
+### Tiempos de Carrera
+
+```{r}
+library(paqueteMET)
+library(readr)
+library(ggplot2)
+data("CarreraLuz22")
+data=CarreraLuz22
+CarreraLuz22M = subset(CarreraLuz22, CarreraLuz22$sex=="Hombre")
+CarreraLuz22_c2M = subset(CarreraLuz22M, CarreraLuz22M$categoria=="2. Abierta")
+
+cuartiles1=data.frame(prob=c(0.25,0.5,0.75),
+                      valor=quantile(CarreraLuz22_c2M$timerun,  c(0.25,0.5,0.75),na.rm = TRUE)/60 )
+q=cuartiles1$valor
+
+p4=ggplot(CarreraLuz22_c2M, aes(x=timerun/60, y=" ")) +
+  geom_jitter(color="#034A94", size=2, alpha=0.9)+ 
+  scale_color_manual(values="#034A94") +
+  geom_point(data=cuartiles1, aes(x=valor), color="#FF7F00",size=3)+
+  geom_boxplot(alpha = 0.4)+
+  labs(title = " ", y= "",  x= "tiempo (min)")+ 
+  geom_text(size=6,data = NULL, x = q[1], y = 0.5, label = "Q1",col="#FF7F00")+
+  geom_text(size=6,data = NULL, x = q[2], y = 0.5, label = "Q2",col="#FF7F00") +
+  geom_text(size=6,data = NULL, x = q[3], y = 0.5, label = "Q3",col="#FF7F00") +
+  geom_text(size=6,data = NULL, x = 96, y = 0.5, label = "atípicos",col="#FF7F00") 
+p4 
+
+```
+
+Column {data-width=350 .tabset}
+----------------------------------------------------------------
+
+### Tiempo Mujeres Categoria Abierta
+
+```{r}
+library(paqueteMET)
+library(readr)
+library(ggplot2)
+data("CarreraLuz22")
+data=CarreraLuz22
+p <- ggplot(CarreraLuz22, aes(categoria, timerun/60)) + geom_point()
+p
+  
+```
+
+Column {data-width=350 .tabset}
+----------------------------------------------------------------
+
+### Tiempo Hombres Categoria Abierta
+
+```{r}
+library(paqueteMET)
+library(readr)
+library(ggplot2)
+data("CarreraLuz22")
+data=CarreraLuz22
+ggplot(CarreraLuz22, aes(y=edad , x=timerun/60))+
+  geom_point()+
+  facet_wrap(~ sex)
+
+```
+
+Column {data-width=10}
+----------------------------------------------------------------
+
+### Indicadores
+
+```{r}
+
+library(ggplot2)
+library(flexdashboard)
+x<-table(CarreraLuz22$edad)
+
+valueBox(value = round(mean(x),2),caption = "Edad Promedio Participantes",icon = "fa-users", color = "red")
+
+```
+
+
+### Velocidad
+
+```{r}
+
+library(ggplot2)
+library(flexdashboard)
+x<-table(CarreraLuz22$timerun/60)
+
+valueBox(value = round(max(CarreraLuz22$timerun/60),3),caption = "Mayor Tiempo",icon = "fas fa-digital-tachograph", color = "blue")
+```
+
+### Distancia
+
+```{r}
+library(ggplot2)
+library(flexdashboard)
+dis="10.07 KM"
+valueBox(value = (dis), caption = "Distancia Recorrida",icon = "fa-road", color = "green")
+```
+
+### NUMERO DE ATLETAS
+
+```{r}
+library(ggplot2)
+library(flexdashboard)
+valueBox(value = "1922 Atletas ", caption = "Numero de Atletas",icon = "fas fa-user-friends", color = "purple")
+```
+
+### MAX VEL
+
+```{r}
+library(ggplot2)
+library(flexdashboard)
+valueBox(value = "5.07 M/S ", caption = "Maxima Velocidad",icon = "fas fa-user-friends", color = "gray")
+```
+
+
+### porcentaje mujer
+
+```{r}
+library(ggplot2)
+library(flexdashboard)
+valueBox(value = "38.71 % ", caption = "Porcentaje de mujeres",icon = "fas fa-user-friends", color = "pink")
+```
+
