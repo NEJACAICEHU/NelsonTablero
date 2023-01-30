@@ -16,6 +16,10 @@ output:
 
 ```{r setup, include=FALSE}
 library(flexdashboard)
+library(paqueteMET)
+library(readr)
+library(ggplot2)
+library(flexdashboard)
 
 ```
 Column {data-width=650 .tabset}
@@ -24,29 +28,11 @@ Column {data-width=650 .tabset}
 ### Tiempos de Carrera
 
 ```{r}
-library(paqueteMET)
-library(readr)
-library(ggplot2)
+
 data("CarreraLuz22")
 data=CarreraLuz22
-CarreraLuz22M = subset(CarreraLuz22, CarreraLuz22$sex=="Hombre")
-CarreraLuz22_c2M = subset(CarreraLuz22M, CarreraLuz22M$categoria=="2. Abierta")
-
-cuartiles1=data.frame(prob=c(0.25,0.5,0.75),
-                      valor=quantile(CarreraLuz22_c2M$timerun,  c(0.25,0.5,0.75),na.rm = TRUE)/60 )
-q=cuartiles1$valor
-
-p4=ggplot(CarreraLuz22_c2M, aes(x=timerun/60, y=" ")) +
-  geom_jitter(color="#034A94", size=2, alpha=0.9)+ 
-  scale_color_manual(values="#034A94") +
-  geom_point(data=cuartiles1, aes(x=valor), color="#FF7F00",size=3)+
-  geom_boxplot(alpha = 0.4)+
-  labs(title = " ", y= "",  x= "tiempo (min)")+ 
-  geom_text(size=6,data = NULL, x = q[1], y = 0.5, label = "Q1",col="#FF7F00")+
-  geom_text(size=6,data = NULL, x = q[2], y = 0.5, label = "Q2",col="#FF7F00") +
-  geom_text(size=6,data = NULL, x = q[3], y = 0.5, label = "Q3",col="#FF7F00") +
-  geom_text(size=6,data = NULL, x = 96, y = 0.5, label = "atípicos",col="#FF7F00") 
-p4 
+ggplot(CarreraLuz22, aes(x = categoria, y = timerun/60 )) +
+  geom_jitter(aes(fill = categoria)) 
 
 ```
 
@@ -56,30 +42,27 @@ Column {data-width=350 .tabset}
 ### Tiempo Mujeres Categoria Abierta
 
 ```{r}
-library(paqueteMET)
-library(readr)
-library(ggplot2)
 data("CarreraLuz22")
 data=CarreraLuz22
-p <- ggplot(CarreraLuz22, aes(categoria, timerun/60)) + geom_point()
-p
+CarreraLuz22M = subset(CarreraLuz22, CarreraLuz22$sex=="Mujer")
+ggplot(CarreraLuz22M, aes(x = categoria, y = timerun/60 )) +
+  geom_boxplot(aes(fill = categoria)) 
+
   
 ```
 
 Column {data-width=350 .tabset}
 ----------------------------------------------------------------
 
-### Tiempo Hombres Categoria Abierta
+### Tiempo Hombres Categoria 
 
 ```{r}
-library(paqueteMET)
-library(readr)
-library(ggplot2)
+
 data("CarreraLuz22")
 data=CarreraLuz22
-ggplot(CarreraLuz22, aes(y=edad , x=timerun/60))+
-  geom_point()+
-  facet_wrap(~ sex)
+CarreraLuz22H = subset(CarreraLuz22, CarreraLuz22$sex=="hOMBRE")
+ggplot(CarreraLuz22M, aes(x = categoria, y = timerun/60 )) +
+  geom_boxplot(aes(fill = categoria))
 
 ```
 
@@ -113,8 +96,7 @@ valueBox(value = round(max(CarreraLuz22$timerun/60),3),caption = "Mayor Tiempo",
 ### Distancia
 
 ```{r}
-library(ggplot2)
-library(flexdashboard)
+
 dis="10.07 KM"
 valueBox(value = (dis), caption = "Distancia Recorrida",icon = "fa-road", color = "green")
 ```
@@ -122,16 +104,13 @@ valueBox(value = (dis), caption = "Distancia Recorrida",icon = "fa-road", color 
 ### NUMERO DE ATLETAS
 
 ```{r}
-library(ggplot2)
-library(flexdashboard)
-valueBox(value = "1922 Atletas ", caption = "Numero de Atletas",icon = "fas fa-user-friends", color = "purple")
+valueBox(value = paste(length(CarreraLuz22$timerun),"Atletas"), caption = "Numero de Atletas",icon = "fas fa-user-friends", color = "purple")
 ```
 
 ### MAX VEL
 
 ```{r}
-library(ggplot2)
-library(flexdashboard)
+
 valueBox(value = "5.07 M/S ", caption = "Maxima Velocidad",icon = "fas fa-user-friends", color = "gray")
 ```
 
@@ -139,8 +118,7 @@ valueBox(value = "5.07 M/S ", caption = "Maxima Velocidad",icon = "fas fa-user-f
 ### porcentaje mujer
 
 ```{r}
-library(ggplot2)
-library(flexdashboard)
+
 valueBox(value = "38.71 % ", caption = "Porcentaje de mujeres",icon = "fas fa-user-friends", color = "pink")
 ```
 
