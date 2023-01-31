@@ -2,16 +2,10 @@
 title: "INFORME DE RESULTADOS CARRERA DE LA LUZ 2022"
 output: 
   flexdashboard::flex_dashboard:
-    theme:
-      bg: "#FFFFFF"
-      fg: "#030303" 
-      primary: "#228B22"
-      base_font:
-        google: Prompt
-      code_font:
-        google: JetBrains Mono
     orientation: columns
     vertical_layout: fill
+    theme:  cerulean
+   
 ---
 
 ```{r setup, include=FALSE}
@@ -20,9 +14,14 @@ library(paqueteMET)
 library(readr)
 library(ggplot2)
 library(flexdashboard)
+library(dplyr)
+library(flextable)
+library(psych)
+
 
 ```
-Column {data-width=650 .tabset}
+
+Column {data-width=700 .tabset}
 ----------------------------------------------------------------
 
 ### Tiempos de Carrera
@@ -36,7 +35,57 @@ ggplot(CarreraLuz22, aes(x = categoria, y = timerun/60 )) +
 
 ```
 
-Column {data-width=350 .tabset}
+### Estadisticos Generales
+
+```{r}
+summary(data$edad)
+psych::describe(data$edad)
+summarytools::descr(data$edad)
+
+```
+
+### Est.- # Por Categoria
+
+```{r}
+
+table(data$categoria, data$sex)
+table(data$categoria, data$sex) %>% 
+  prop.table()
+
+```
+
+### Est.-Frec. Absoluta
+
+```{r}
+ft1=table(data$categoria)%>% 
+  as.data.frame()
+colnames(ft1)=c("Categoría", "Frecuencia absoluta")
+ft1=flextable(ft1)
+
+set_flextable_defaults(
+  font.size = 12, font.family = "Helvetica",
+  font.color = "#333333",
+  table.layout = "fixed",
+  border.color = "red",
+  padding.top = 3, padding.bottom = 3,
+  padding.left = 4, padding.right = 4)
+
+ft1 <- ft1 %>%
+  width(j = 1,  width = 2) %>%
+  width(j = 2, width = 1)
+ft1
+```
+
+### Est.-Frec. Por Intervalos
+
+```{r}
+breaks=c(10,18,40,50,60,80)    # limites de intervalos
+Edad.corredores=cut(data$edad, breaks)
+summarytools::freq(Edad.corredores)
+```
+
+
+Column {data-width=400}
 ----------------------------------------------------------------
 
 ### Tiempo Mujeres Categoria Abierta
@@ -51,9 +100,6 @@ ggplot(CarreraLuz22M, aes(x = categoria, y = timerun/60 )) +
   
 ```
 
-Column {data-width=350 .tabset}
-----------------------------------------------------------------
-
 ### Tiempo Hombres Categoria 
 
 ```{r}
@@ -66,18 +112,14 @@ ggplot(CarreraLuz22M, aes(x = categoria, y = timerun/60 )) +
 
 ```
 
-Column {data-width=10}
+Column { data-width=50 }
 ----------------------------------------------------------------
 
 ### Indicadores
 
 ```{r}
 
-library(ggplot2)
-library(flexdashboard)
-x<-table(CarreraLuz22$edad)
-
-valueBox(value = round(mean(x),2),caption = "Edad Promedio Participantes",icon = "fa-users", color = "red")
+valueBox(value = round(mean(data$edad),2),caption = "Edad Promedio Participantes",icon = "fa-users", color = "red")
 
 ```
 
@@ -86,8 +128,7 @@ valueBox(value = round(mean(x),2),caption = "Edad Promedio Participantes",icon =
 
 ```{r}
 
-library(ggplot2)
-library(flexdashboard)
+
 x<-table(CarreraLuz22$timerun/60)
 
 valueBox(value = round(max(CarreraLuz22$timerun/60),3),caption = "Mayor Tiempo",icon = "fas fa-digital-tachograph", color = "blue")
@@ -99,6 +140,7 @@ valueBox(value = round(max(CarreraLuz22$timerun/60),3),caption = "Mayor Tiempo",
 
 dis="10.07 KM"
 valueBox(value = (dis), caption = "Distancia Recorrida",icon = "fa-road", color = "green")
+
 ```
 
 ### NUMERO DE ATLETAS
