@@ -17,12 +17,28 @@ library(flexdashboard)
 library(dplyr)
 library(flextable)
 library(psych)
+library(vembedr)
 
 
 ```
 
-Column {data-width=700 .tabset}
+Column {data-width=600 .tabset}
 ----------------------------------------------------------------
+### Resumen
+
+**La iniciativa denominada Carrera de la Luz, es un evento anual en la ciudad de Cali, donde su finalidad es contribuir a programas de emprendedores y escuelas de inicación deportiva.**
+
+**Para el 2022 la mayor participación en la carrera se presentó en la categoría abierta, seguida de veteranos A y la de menor participación fue la juvenil.**
+
+
+
+```{r}
+embed_youtube("cw_yOiThVc0",width = NULL,
+height = 280,
+ratio = c("16by9"),frameborder=1)
+```
+
+
 
 ### Tiempos de Carrera
 
@@ -35,7 +51,9 @@ ggplot(CarreraLuz22, aes(x = categoria, y = timerun/60 )) +
 
 ```
 
+
 ### Estadisticos Generales
+**Participaron 1922 personas, la edad media fue de 37.45, la persona con mayor edad tenia 76 años, mientras la menor tenia 15**
 
 ```{r}
 summary(data$edad)
@@ -45,6 +63,7 @@ summarytools::descr(data$edad)
 ```
 
 ### Est.- # Por Categoria
+**El 61% de los participantes pertenecían a la categoría abierta, de la cual 677 eran hombres y 502 mujeres**
 
 ```{r}
 
@@ -55,6 +74,7 @@ table(data$categoria, data$sex) %>%
 ```
 
 ### Est.-Frec. Absoluta
+**1179 participantes estaban en la categoría abierta**
 
 ```{r}
 ft1=table(data$categoria)%>% 
@@ -77,11 +97,37 @@ ft1
 ```
 
 ### Est.-Frec. Por Intervalos
+**El rango de edad se concentró entre las edades de 18 y 40 años, equivalente al 64% de los participantes. El siguente rango de edad donde tuvo mayor afluencia fue entre 41-50 años con 397 participantes**
 
 ```{r}
-breaks=c(10,18,40,50,60,80)    # limites de intervalos
+breaks=c(10,18,40,50,60,80)    
 Edad.corredores=cut(data$edad, breaks)
 summarytools::freq(Edad.corredores)
+```
+
+### Grafico por Categorias
+
+```{r}
+library(highcharter)
+highchart() %>%
+  hc_chart(type = 'column',
+           options3d = list(
+             enabled = TRUE,
+             beta = 40,
+             alpha = 20
+           )) %>%
+  
+  hc_xAxis(categories = c("1. Juvenil", "2. Abierta", "3. Veteranos A", "4. Veteranos B", "5. Veteranos C")) %>%
+  hc_add_series(data$categoria, name = 'Categoria', dataLabels = list(enabled = TRUE)) %>%
+  hc_credits(enabled = TRUE,
+             text = 'Carrera de la Luz 2022',
+             href = 'Carrera 2022') %>%
+  hc_exporting(enabled = TRUE) %>%
+  hc_plotOptions(line = list(color = "RED",
+marker = list(
+fillColor = "white",
+lineWidth = 2,
+lineColor = NULL)))
 ```
 
 
